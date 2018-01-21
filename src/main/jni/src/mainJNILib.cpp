@@ -416,9 +416,6 @@ static void renderPageInternal( FPDF_PAGE page,
     	flags |= FPDF_ANNOT;
     }
 
-    FPDFBitmap_FillRect( pdfBitmap, baseX, baseY, baseHorSize, baseVerSize,
-                         0x00000000); // Transparent
-
     FPDF_RenderPageBitmap( pdfBitmap, page,
                            startX, startY,
                            drawSizeHor, drawSizeVer,
@@ -536,9 +533,6 @@ JNI_FUNC(void, PdfiumCore, nativeRenderPageBitmap)(JNI_ARGS, jlong pagePtr, jobj
     if(renderAnnot) {
     	flags |= FPDF_ANNOT;
     }
-
-    FPDFBitmap_FillRect( pdfBitmap, baseX, baseY, baseHorSize, baseVerSize,
-                         0x00000000); //White
 
     FPDF_RenderPageBitmap( pdfBitmap, page,
                            startX, startY,
