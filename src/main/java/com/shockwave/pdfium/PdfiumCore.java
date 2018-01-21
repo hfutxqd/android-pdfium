@@ -1,5 +1,6 @@
 package com.shockwave.pdfium;
 
+import android.content.res.Resources;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -22,6 +23,7 @@ public class PdfiumCore {
     private static final String FD_FIELD_NAME = "descriptor";
 
     static {
+      if(Config.natives) {
         try {
             System.loadLibrary("modpng");
             System.loadLibrary("modft2");
@@ -30,6 +32,7 @@ public class PdfiumCore {
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, "Native libraries failed to load - " + e);
         }
+      }
     }
 
     private native long nativeOpenDocument(int fd, String password);
@@ -116,8 +119,8 @@ public class PdfiumCore {
 
 
     /** Context needed to get screen density */
-    public PdfiumCore(Context ctx) {
-        mCurrentDpi = ctx.getResources().getDisplayMetrics().densityDpi;
+    public PdfiumCore() {
+        mCurrentDpi = Resources.getSystem().getDisplayMetrics().densityDpi;
     }
 
     /** Create new document from file */
