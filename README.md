@@ -1,3 +1,10 @@
+# Fork
+
+Features over standart repo:
+
+  * restore transparent bitmap generations
+  * remove 'Context' requirement for library initialization
+
 # Pdfium Android binding with Bitmap rendering
 Uses pdfium library [from AOSP](https://android.googlesource.com/platform/external/pdfium/)
 
