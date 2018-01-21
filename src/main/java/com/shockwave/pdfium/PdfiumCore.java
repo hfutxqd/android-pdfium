@@ -23,16 +23,16 @@ public class PdfiumCore {
     private static final String FD_FIELD_NAME = "descriptor";
 
     static {
-      if(Config.natives) {
-        try {
-            System.loadLibrary("modpng");
-            System.loadLibrary("modft2");
-            System.loadLibrary("modpdfium");
-            System.loadLibrary("jniPdfium");
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(TAG, "Native libraries failed to load - " + e);
+        if (Config.natives) {
+            try {
+                System.loadLibrary("modpng");
+                System.loadLibrary("modft2");
+                System.loadLibrary("modpdfium");
+                System.loadLibrary("jniPdfium");
+            } catch (UnsatisfiedLinkError e) {
+                Log.e(TAG, "Native libraries failed to load - " + e);
+            }
         }
-      }
     }
 
     private native long nativeOpenDocument(int fd, String password);
