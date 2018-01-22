@@ -5,42 +5,19 @@ Features over standart repo:
   * restore transparent bitmap generations
   * remove 'Context' requirement for library initialization
 
-# Pdfium Android binding with Bitmap rendering
-Uses pdfium library [from AOSP](https://android.googlesource.com/platform/external/pdfium/)
+# build natives
 
-The demo app (for not modified lib) is [here](https://github.com/mshockwave/PdfiumAndroid-Demo-App)
+Natives shall be build manually. You need Ubuntu (see supported platforms in `./build/install-build-deps-android.sh`). Read more about setup OS and build scripts from links below. Use `./build.sh` and `build.diff`
 
-Forked for use with [AndroidPdfViewer](https://github.com/barteksc/AndroidPdfViewer) project.
+## Links
 
-API is highly compatible with original version, only additional methods were created.
-
-## What's new in 1.8.0?
-* Add method for reading links from given page
-* Add method for mapping page coordinates to screen coordinates
-* Add `PdfiumCore#getPageSize(...)` method, which does not require page to be opened
-* Add `Size` and `SizeF` utility classes
-* Add javadoc comments to `PdfiumCore`
-
-1.8.1 handles errors when using `PdfiumCore#getPageSize(PdfDocument, int)` and returns `Size(0, 0)` when error occurs
-
-1.8.2 merges pull request by [mcsong](https://github.com/mcsong) fixing potential NPE when getting links
-
-## Installation
-Add to _build.gradle_:
-
-`compile 'com.github.barteksc:pdfium-android:1.8.2'`
-
-Library is available in jcenter and Maven Central repositories.
-
-## Methods inconsistency
-Version 1.8.0 added method for getting page size - `PdfiumCore#getPageSize(...)`.
-It is important to note, that this method does not require page to be opened. However, there are also
-old `PdfiumCore#getPageWidth(...)`, `PdfiumCore#getPageWidthPoint(...)`, `PdfiumCore#getPageHeight()`
-and `PdfiumCore#getPageHeightPoint()` which require page to be opened.
-
-This inconsistency will be resolved in next major version, which aims to redesign API.
+  * https://pdfium.googlesource.com/pdfium/
+  * https://chromium.googlesource.com/chromium/src/+/master/docs/android_build_instructions.md
+  * https://github.com/pvginkel/PdfiumViewer/wiki/Building-PDFium
+  * https://github.com/barteksc/PdfiumAndroid
 
 ## Reading links
+
 Version 1.8.0 introduces `PdfiumCore#getPageLinks(PdfDocument, int)` method, which allows to get list
 of links from given page. Links are returned as `List` of type `PdfDocument.Link`.
 `PdfDocument.Link` holds destination page (may be null), action URI (may be null or empty)
@@ -70,12 +47,13 @@ for (PdfDocument.Link link : links) {
 ```
 
 ## Simple example
+
 ``` java
 void openPdf() {
     ImageView iv = (ImageView) findViewById(R.id.imageView);
     ParcelFileDescriptor fd = ...;
     int pageNum = 0;
-    PdfiumCore pdfiumCore = new PdfiumCore(context);
+    PdfiumCore pdfiumCore = new PdfiumCore();
     try {
         PdfDocument pdfDocument = pdfiumCore.newDocument(fd);
 
@@ -130,6 +108,3 @@ public void printBookmarksTree(List<PdfDocument.Bookmark> tree, String sep) {
 }
 
 ```
-## Build native part
-Go to `PROJECT_PATH/src/main/jni` and run command `$ ndk-build`.
-This step may be executed only once, every future `.aar` build will use generated libs.
