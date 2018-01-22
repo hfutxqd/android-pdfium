@@ -1,0 +1,37 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index c771b81..e4695ea 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -17,13 +17,14 @@ group("freetype_common") {
+ }
+ 
+ config("pdfium_common_config") {
+-  cflags = []
++  cflags = [ "-fvisibility=default" ]
+   ldflags = []
+   include_dirs = [ "." ]
+   defines = [
+     "OPJ_STATIC",
+     "PNG_PREFIX",
+     "PNG_USE_READ_MACROS",
++    "FPDFSDK_EXPORTS"
+   ]
+ 
+   if (pdf_enable_v8) {
+@@ -101,7 +102,7 @@ config("xfa_warnings") {
+   }
+ }
+ 
+-jumbo_static_library("pdfium") {
++shared_library("pdfium") {
+   sources = [
+     "fpdfsdk/cba_annotiterator.cpp",
+     "fpdfsdk/cba_annotiterator.h",
+@@ -182,6 +183,7 @@ jumbo_static_library("pdfium") {
+ 
+   libs = []
+   configs += [ ":pdfium_core_config" ]
++  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+ 
+   deps = [
+     ":fdrm",
