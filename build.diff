@@ -1,5 +1,5 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index c771b81..e4695ea 100644
+index c771b81..ffbec0b 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
 @@ -17,13 +17,14 @@ group("freetype_common") {
@@ -18,20 +18,15 @@ index c771b81..e4695ea 100644
    ]
  
    if (pdf_enable_v8) {
-@@ -101,7 +102,7 @@ config("xfa_warnings") {
+@@ -101,6 +102,11 @@ config("xfa_warnings") {
    }
  }
  
--jumbo_static_library("pdfium") {
-+shared_library("pdfium") {
++shared_library("modpdfium") {
++  deps = [":pdfium"]
++  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
++}
++
+ jumbo_static_library("pdfium") {
    sources = [
      "fpdfsdk/cba_annotiterator.cpp",
-     "fpdfsdk/cba_annotiterator.h",
-@@ -182,6 +183,7 @@ jumbo_static_library("pdfium") {
- 
-   libs = []
-   configs += [ ":pdfium_core_config" ]
-+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
- 
-   deps = [
-     ":fdrm",
