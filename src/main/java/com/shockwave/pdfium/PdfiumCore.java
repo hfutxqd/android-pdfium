@@ -24,7 +24,7 @@ public class PdfiumCore {
 
     static {
         if (Config.natives) {
-            System.loadLibrary("pdfium");
+            System.loadLibrary("modpdfium");
             System.loadLibrary("pdfiumjni");
         }
     }
