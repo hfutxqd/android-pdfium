@@ -6,6 +6,10 @@ Features over standart repo:
   * remove 'Context' requirement for library initialization
   * library renamed from `libpdfium.so` to `libmodpdfium.so` because API21 && API22 failed to lookup symbols due to conflict with `/system/lib/libpdfium.so`.
 
+Original library:
+
+  * https://github.com/barteksc/PdfiumAndroid
+
 # build natives
 
 Natives shall be build manually. You need Ubuntu (see supported platforms in `./build/install-build-deps-android.sh`). Read more about setup OS and build scripts from links below. Use `./build.sh` and `build.diff`
