@@ -24,7 +24,7 @@ public class PdfiumCore {
 
     static {
         if (Config.natives) {
-            System.loadLibrary("pdfium");
+            System.loadLibrary("modpdfium");
             System.loadLibrary("pdfiumjni");
         }
     }
@@ -114,7 +114,15 @@ public class PdfiumCore {
 
     /** Context needed to get screen density */
     public PdfiumCore() {
-        mCurrentDpi = Resources.getSystem().getDisplayMetrics().densityDpi;
+        mCurrentDpi = 72; // pdfium has default dpi set to 72
+    }
+
+    public int getCurrentDpi() {
+        return mCurrentDpi;
+    }
+
+    public void setCurrentDpi(int d) {
+        mCurrentDpi = d;
     }
 
     /** Create new document from file */
