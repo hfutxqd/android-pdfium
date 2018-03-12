@@ -148,8 +148,11 @@ jobject NewInteger(JNIEnv* env, jint value) {
     return env->NewObject(cls, methodID, value);
 }
 
-uint16_t rgbTo565(rgb *color) {
-    return ((color->red >> 3) << 11) | ((color->green >> 2) << 5) | (color->blue >> 3);
+uint16_t rgb_to_565(unsigned char R8, unsigned char G8, unsigned char B8) {
+    unsigned char R5 = ( R8 * 249 + 1014 ) >> 11;
+    unsigned char G6 = ( G8 * 253 +  505 ) >> 10;
+    unsigned char B5 = ( B8 * 249 + 1014 ) >> 11;
+    return (R5 << 11) | (G6 << 5) | (B5);
 }
 
 void rgbBitmapTo565(void *source, int sourceStride, void *dest, AndroidBitmapInfo *info) {
@@ -160,7 +163,8 @@ void rgbBitmapTo565(void *source, int sourceStride, void *dest, AndroidBitmapInf
         srcLine = (rgb*) source;
         dstLine = (uint16_t*) dest;
         for (x = 0; x < info->width; x++) {
-            dstLine[x] = rgbTo565(&srcLine[x]);
+            rgb *r = &srcLine[x];
+            dstLine[x] = rgb_to_565(r->red, r->green, r->blue);
         }
         source = (char*) source + sourceStride;
         dest = (char*) dest + info->stride;
@@ -532,6 +536,11 @@ JNI_FUNC(void, PdfiumCore, nativeRenderPageBitmap)(JNI_ARGS, jlong pagePtr, jobj
 
     if(renderAnnot) {
     	flags |= FPDF_ANNOT;
+    }
+
+    if (info.format == ANDROID_BITMAP_FORMAT_RGB_565) {
+        FPDFBitmap_FillRect( pdfBitmap, baseX, baseY, baseHorSize, baseVerSize,
+                             0xFFFFFFFF); //White
     }
 
     FPDF_RenderPageBitmap( pdfBitmap, page,
