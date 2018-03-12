@@ -21,6 +21,6 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 LOCAL_SHARED_LIBRARIES := modpdfium
 LOCAL_LDLIBS += -llog -landroid -ljnigraphics
 
-LOCAL_SRC_FILES :=  $(LOCAL_PATH)/src/mainJNILib.cpp
+LOCAL_SRC_FILES :=  $(LOCAL_PATH)/src/jni.cpp
 
 include $(BUILD_SHARED_LIBRARY)
