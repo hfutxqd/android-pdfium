@@ -19,15 +19,14 @@ Some portion of jni code shared with:
     int pageNum = 0;
     Pdfium pdfium = new Pdfium();
     pdfium.open(fd);
-    Pdfium.Page page = pdfium.getPage(pageNum);
-
     Pdfium.Size size = pdfium.getPageSize(pageNum);
+    Pdfium.Page page = pdfium.getPage(pageNum);
 
     // ARGB_8888 - best quality, high memory usage, higher possibility of OutOfMemoryError
     // RGB_565 - little worse quality, twice less memory usage
-    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+    Bitmap bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.RGB_565);
     
-    pdfium.render(bitmap, 0, 0, width, height);
+    pdfium.render(bitmap, 0, 0, bm.getWidth(), bm.getHeight());
 
     Log.e(TAG, "title = " + pdfium.getMeta(Pdfium.META_TITLE));
     Log.e(TAG, "author = " + pdfium.getMeta(Pdfium.META_AUTHOR));
