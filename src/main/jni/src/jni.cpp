@@ -338,7 +338,7 @@ JNI_FUNC(jobjectArray, Pdfium, getTOC)(JNI_ARGS) {
     return ar;
 }
 
-JNI_FUNC(jobject, Pdfium, getPage)(JNI_ARGS, jint page) {
+JNI_FUNC(jobject, Pdfium, openPage)(JNI_ARGS, jint page) {
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
@@ -346,12 +346,11 @@ JNI_FUNC(jobject, Pdfium, getPage)(JNI_ARGS, jint page) {
     FPDF_PAGE p = FPDF_LoadPage(doc, page);
     if (p != 0) {
         jclass clazz = env->FindClass("com/github/axet/pdfium/Pdfium$Page");
-        jmethodID constructorID = env->GetMethodID(clazz, "<init>", "()V");
+        jmethodID constructorID = env->GetMethodID(clazz, "<init>",
+                                                   "(Lcom/github/axet/pdfium/Pdfium;)V");
         jfieldID fid1 = env->GetFieldID(clazz, "handle", "J");
-        jfieldID fid2 = env->GetFieldID(clazz, "doc", "J");
-        jobject o = env->NewObject(clazz, constructorID);
+        jobject o = env->NewObject(clazz, constructorID, thiz);
         env->SetLongField(o, fid1, (jlong) p);
-        env->SetLongField(o, fid2, (jlong) doc);
         return o;
     } else {
         return 0;
@@ -467,8 +466,11 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
 
-    jfieldID fidDoc = env->GetFieldID(cls, "doc", "J");
-    FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fidDoc);
+    jclass pcls = env->FindClass("com/github/axet/pdfium/Pdfium");
+    jfieldID fidOuter = env->GetFieldID(cls, "this$0", "Lcom/github/axet/pdfium/Pdfium;");
+    jobject out = env->GetObjectField(thiz, fidOuter);
+    jfieldID fidDoc = env->GetFieldID(pcls, "handle", "J");
+    FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(out, fidDoc);
 
     int pos = 0;
     std::vector<jlong> links;
@@ -517,7 +519,7 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
     return result;
 }
 
-JNI_FUNC(jobject, Pdfium_00024Page, nativePageCoordsToDevice)(JNI_ARGS, jint startX,
+JNI_FUNC(jobject, Pdfium_00024Page, toDevice)(JNI_ARGS, jint startX,
                                                               jint startY, jint sizeX,
                                                               jint sizeY, jint rotate,
                                                               jdouble pageX,
@@ -605,13 +607,13 @@ JNI_FUNC(jobjectArray, Pdfium_00024Text, getBounds)(JNI_ARGS, jint start, jint c
     return ar;
 }
 
-JNI_FUNC(jobject, Pdfium_00024Text, search)(JNI_ARGS, jstring str, jint flags) {
+JNI_FUNC(jobject, Pdfium_00024Text, search)(JNI_ARGS, jstring str, jint flags, jint index) {
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_TEXTPAGE tp = (FPDF_TEXTPAGE) env->GetLongField(thiz, fid);
 
     FPDF_WIDESTRING ss = GetStringUTF16LEChars(env, str);
-    FPDF_SCHHANDLE search = FPDFText_FindStart(tp, ss, (unsigned long) flags, 0);
+    FPDF_SCHHANDLE search = FPDFText_FindStart(tp, ss, (unsigned long) flags, index);
     ReleaseStringUTF16LEChars(ss);
 
     jclass searchClass = env->FindClass("com/github/axet/pdfium/Pdfium$Search");

@@ -31,8 +31,7 @@ public class Pdfium {
         }
     }
 
-    public static class Page {
-        private long doc;
+    public class Page {
         private long handle;
 
         public native Text open();
@@ -64,6 +63,12 @@ public class Pdfium {
          */
         public native Link[] getLinks();
 
+        public Rect toDevice(int startX, int startY, int sizeX, int sizeY, int rotate, Rect rect) {
+            Point leftTop = toDevice(startX, startY, sizeX, sizeY, rotate, rect.left, rect.top);
+            Point rightBottom = toDevice(startX, startY, sizeX, sizeY, rotate, rect.right, rect.bottom);
+            return new Rect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
+        }
+
         /**
          * Map page coordinates to device screen coordinates
          *
@@ -77,7 +82,7 @@ public class Pdfium {
          * @param pageY  Y value in page coordinate
          * @return mapped coordinates
          */
-        public native Point mapPageCoordsToDevice(int startX, int startY, int sizeX, int sizeY, int rotate, double pageX, double pageY);
+        public native Point toDevice(int startX, int startY, int sizeX, int sizeY, int rotate, double pageX, double pageY);
 
         public native void close();
     }
@@ -117,7 +122,7 @@ public class Pdfium {
 
         public native Rect[] getBounds(int start, int count);
 
-        public native Search search(String str, int flags);
+        public native Search search(String str, int flags, int index);
 
         public native void close();
     }
@@ -217,12 +222,12 @@ public class Pdfium {
      */
     public native int getPagesCount();
 
+    public native Size getPageSize(int pageIndex);
+
     /**
      * Open page
      */
-    public native Page getPage(int pageIndex);
-
-    public native Size getPageSize(int pageIndex);
+    public native Page openPage(int pageIndex);
 
     /**
      * Release native resources and opened file
