@@ -5,10 +5,6 @@ LOCAL_MODULE := modpdfium
 
 ARCH_PATH = $(TARGET_ARCH_ABI)
 
-ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
-    ARCH_PATH = armeabi
-endif
-
 LOCAL_SRC_FILES := $(LOCAL_PATH)/lib/$(ARCH_PATH)/libmodpdfium.so
 
 include $(PREBUILT_SHARED_LIBRARY)
