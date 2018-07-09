@@ -2,18 +2,9 @@
 
 Original Android pdfium has few rendering issues.
 
-# build natives
+# Build tweaks:
 
 Natives shall be build manually. You need Ubuntu (see supported platforms in `./build/install-build-deps-android.sh`). Read more about setup OS and build scripts from links below. Use `./build.sh` and `build.diff`
-
-## Links
-
-  * https://pdfium.googlesource.com/pdfium/
-  * https://chromium.googlesource.com/chromium/src/+/master/docs/android_build_instructions.md
-  * https://github.com/pvginkel/PdfiumViewer/wiki/Building-PDFium
-  * https://github.com/barteksc/PdfiumAndroid
-
-Build tweaks:
 
   * library renamed from `libpdfium.so` to `libmodpdfium.so` because API21 && API22 failed to lookup symbols due to conflict with `/system/lib/libpdfium.so`.
 
@@ -72,3 +63,10 @@ Some portion of jni code shared with:
         }
     }
 ```
+
+## Links
+
+  * https://pdfium.googlesource.com/pdfium/
+  * https://chromium.googlesource.com/chromium/src/+/master/docs/android_build_instructions.md
+  * https://github.com/pvginkel/PdfiumViewer/wiki/Building-PDFium
+  * https://github.com/barteksc/PdfiumAndroid
