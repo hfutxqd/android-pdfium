@@ -8,7 +8,7 @@ extern "C" {
 
 #include <android/log.h>
 
-#define JNI_FUNC(retType, bindClass, name)  JNIEXPORT retType JNICALL Java_com_shockwave_pdfium_##bindClass##_##name
+#define JNI_FUNC(retType, bindClass, name)  JNIEXPORT retType JNICALL Java_com_github_axet_pdfium_##bindClass##_##name
 #define JNI_ARGS    JNIEnv *env, jobject thiz
 
 #define LOG_TAG "jniPdfium"

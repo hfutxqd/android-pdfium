@@ -10,3 +10,5 @@ src/main/obj
 /captures
 
 .externalNativeBuild/
+
+src/main/jni/lib/
