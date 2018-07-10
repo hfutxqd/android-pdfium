@@ -520,10 +520,10 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
 }
 
 JNI_FUNC(jobject, Pdfium_00024Page, toDevice)(JNI_ARGS, jint startX,
-                                                              jint startY, jint sizeX,
-                                                              jint sizeY, jint rotate,
-                                                              jdouble pageX,
-                                                              jdouble pageY) {
+                                              jint startY, jint sizeX,
+                                              jint sizeY, jint rotate,
+                                              jdouble pageX,
+                                              jdouble pageY) {
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
@@ -535,6 +535,24 @@ JNI_FUNC(jobject, Pdfium_00024Page, toDevice)(JNI_ARGS, jint startX,
     jclass clazz = env->FindClass("android/graphics/Point");
     jmethodID constructorID = env->GetMethodID(clazz, "<init>", "(II)V");
     return env->NewObject(clazz, constructorID, deviceX, deviceY);
+}
+
+JNI_FUNC(jobject, Pdfium_00024Page, toPage)(JNI_ARGS, jint startX,
+                                            jint startY, jint sizeX,
+                                            jint sizeY, jint rotate,
+                                            jint deviceX,
+                                            jint deviceY) {
+    jclass cls = env->GetObjectClass(thiz);
+    jfieldID fid = env->GetFieldID(cls, "handle", "J");
+    FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
+
+    double pageX, pageY;
+
+    FPDF_DeviceToPage(page, startX, startY, sizeX, sizeY, rotate, deviceX, deviceY, &pageX, &pageY);
+
+    jclass clazz = env->FindClass("android/graphics/Point");
+    jmethodID constructorID = env->GetMethodID(clazz, "<init>", "(II)V");
+    return env->NewObject(clazz, constructorID, (int) pageX, (int) pageY);
 }
 
 JNI_FUNC(jobject, Pdfium_00024Page, open)(JNI_ARGS) {
