@@ -273,12 +273,16 @@ JNI_FUNC(jstring, Pdfium, getMeta)(JNI_ARGS, jstring str) {
     const char *ctag = env->GetStringUTFChars(str, NULL);
 
     size_t bufferLen = FPDF_GetMetaText(doc, ctag, NULL, 0);
-    jbyte *msg = (jbyte *) malloc(bufferLen);
-    FPDF_GetMetaText(doc, ctag, msg, bufferLen);
-    env->ReleaseStringUTFChars(str, ctag);
-    jstring s = NewStringUTF16LE(env, msg, bufferLen - 2);
-    free(msg);
-    return s;
+    if (bufferLen > 0) {
+        jbyte *msg = (jbyte *) malloc(bufferLen);
+        FPDF_GetMetaText(doc, ctag, msg, bufferLen);
+        env->ReleaseStringUTFChars(str, ctag);
+        jstring s = NewStringUTF16LE(env, msg, bufferLen - 2);
+        free(msg);
+        return s;
+    }
+
+    return NULL;
 }
 
 typedef struct {
@@ -493,10 +497,12 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
         FPDF_ACTION action = FPDFLink_GetAction(link);
         if (action != 0) {
             size_t bufferLen = FPDFAction_GetURIPath(doc, action, NULL, 0);
-            char *buf = (char *) malloc(bufferLen);
-            FPDFAction_GetURIPath(doc, action, buf, bufferLen);
-            s = env->NewStringUTF(buf);
-            free(buf);
+            if (bufferLen > 0) {
+                char *buf = (char *) malloc(bufferLen);
+                FPDFAction_GetURIPath(doc, action, buf, bufferLen);
+                s = env->NewStringUTF(buf);
+                free(buf);
+            }
         }
 
         jobject rect = 0;
