@@ -84,6 +84,12 @@ public class Pdfium {
          */
         public native Point toDevice(int startX, int startY, int sizeX, int sizeY, int rotate, double pageX, double pageY);
 
+        public Rect toPage(int startX, int startY, int sizeX, int sizeY, int rotate, Rect rect) {
+            Point leftTop = toPage(startX, startY, sizeX, sizeY, rotate, rect.left, rect.top);
+            Point rightBottom = toPage(startX, startY, sizeX, sizeY, rotate, rect.right, rect.bottom);
+            return new Rect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
+        }
+
         public native Point toPage(int startX, int startY, int sizeX, int sizeY, int rotate, int deviceX, int deviceY);
 
         public native void close();
