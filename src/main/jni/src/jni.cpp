@@ -28,16 +28,16 @@ static void initLibraryIfNeed() {
     if (sLibraryReferenceCount == 0) {
         LOGD("Init FPDF library");
         FPDF_InitLibrary();
+        sLibraryReferenceCount++;
     }
-    sLibraryReferenceCount++;
 }
 
 static void destroyLibraryIfNeed() {
     Mutex::Autolock lock(sLibraryLock);
-    sLibraryReferenceCount--;
-    if (sLibraryReferenceCount == 0) {
+    if (sLibraryReferenceCount > 0) {
         LOGD("Destroy FPDF library");
         FPDF_DestroyLibrary();
+        sLibraryReferenceCount = 0;
     }
 }
 
@@ -189,13 +189,11 @@ jlong outerHandle(JNIEnv *env, jobject thiz) {
 extern "C" { //For JNI support
 
 JNI_FUNC(void, Pdfium, FPDF_1InitLibrary)(JNIEnv *env, jclass cls) {
-    if (sLibraryReferenceCount == 0)
-        initLibraryIfNeed();
+    initLibraryIfNeed();
 }
 
 JNI_FUNC(void, Pdfium, FPDF_1DestroyLibrary)(JNIEnv *env, jclass cls) {
-    if (sLibraryReferenceCount > 0)
-        destroyLibraryIfNeed();
+    destroyLibraryIfNeed();
 }
 
 static int getBlock(void *param, unsigned long position, unsigned char *outBuffer,
@@ -210,8 +208,7 @@ static int getBlock(void *param, unsigned long position, unsigned char *outBuffe
 }
 
 JNI_FUNC(void, Pdfium, open)(JNI_ARGS, jobject pfd, jstring password) {
-    if (sLibraryReferenceCount == 0)
-        initLibraryIfNeed();
+    initLibraryIfNeed();
 
     int fd = getFD(env, pfd);
 
