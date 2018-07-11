@@ -150,18 +150,6 @@ int jniThrowExceptionFmt(JNIEnv *env, const char *className, const char *fmt, ..
     va_end(args);
 }
 
-jobject NewLong(JNIEnv *env, jlong value) {
-    jclass cls = env->FindClass("java/lang/Long");
-    jmethodID methodID = env->GetMethodID(cls, "<init>", "(J)V");
-    return env->NewObject(cls, methodID, value);
-}
-
-jobject NewInteger(JNIEnv *env, jint value) {
-    jclass cls = env->FindClass("java/lang/Integer");
-    jmethodID methodID = env->GetMethodID(cls, "<init>", "(I)V");
-    return env->NewObject(cls, methodID, value);
-}
-
 uint16_t rgb_to_565(unsigned char R8, unsigned char G8, unsigned char B8) {
     unsigned char R5 = (R8 * 249 + 1014) >> 11;
     unsigned char G6 = (G8 * 253 + 505) >> 10;
