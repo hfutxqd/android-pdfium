@@ -469,11 +469,7 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
 
-    jclass pcls = env->FindClass("com/github/axet/pdfium/Pdfium");
-    jfieldID fidOuter = env->GetFieldID(cls, "this$0", "Lcom/github/axet/pdfium/Pdfium;");
-    jobject out = env->GetObjectField(thiz, fidOuter);
-    jfieldID fidDoc = env->GetFieldID(pcls, "handle", "J");
-    FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(out, fidDoc);
+    FPDF_DOCUMENT doc = (FPDF_DOCUMENT) outerHandle(env, thiz);
 
     int pos = 0;
     std::vector<jlong> links;
@@ -483,14 +479,12 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
     }
 
     jclass linkClass = env->FindClass("com/github/axet/pdfium/Pdfium$Link");
-    jmethodID constructorID = env->GetMethodID(linkClass, "<init>",
-                                               "(Ljava/lang/String;ILandroid/graphics/Rect;)V");
     jobjectArray result = env->NewObjectArray(links.size(), linkClass, 0);
     for (int i = 0; i < links.size(); i++) {
         int index = -1;
         FPDF_DEST dest = FPDFLink_GetDest(doc, link);
         if (dest != 0)
-            index = FPDFDest_GetPageIndex(doc, dest);
+            index = (int) FPDFDest_GetPageIndex(doc, dest);
 
         jstring s = 0;
         FPDF_ACTION action = FPDFLink_GetAction(link);
@@ -513,6 +507,8 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
                                   (int) fsRectF.right, (int) fsRectF.bottom);
         }
 
+        jmethodID constructorID = env->GetMethodID(linkClass, "<init>",
+                                                   "(Ljava/lang/String;ILandroid/graphics/Rect;)V");
         jobject v = env->NewObject(linkClass, constructorID, s, index, rect);
 
         env->SetObjectArrayElement(result, i, v);
