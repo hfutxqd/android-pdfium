@@ -187,12 +187,12 @@ void rgbBitmapTo565(void *source, int sourceStride, void *dest, AndroidBitmapInf
 
 extern "C" { //For JNI support
 
-JNI_FUNC(void, Pdfium, FPDF_1InitLibrary)(JNI_ARGS, jobject pfd, jstring password) {
+JNI_FUNC(void, Pdfium, FPDF_1InitLibrary)(JNIEnv *env, jclass cls) {
     if (sLibraryReferenceCount == 0)
         initLibraryIfNeed();
 }
 
-JNI_FUNC(void, Pdfium, FPDF_1DestroyLibrary)(JNI_ARGS, jobject pfd, jstring password) {
+JNI_FUNC(void, Pdfium, FPDF_1DestroyLibrary)(JNIEnv *env, jclass cls) {
     if (sLibraryReferenceCount > 0)
         destroyLibraryIfNeed();
 }
