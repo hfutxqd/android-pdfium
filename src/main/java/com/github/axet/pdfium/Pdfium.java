@@ -31,6 +31,10 @@ public class Pdfium {
         }
     }
 
+    public static native void FPDF_InitLibrary();
+
+    public static native void FPDF_DestroyLibrary();
+
     public class Page {
         private long handle;
 
