@@ -173,6 +173,19 @@ void rgbBitmapTo565(void *source, int sourceStride, void *dest, AndroidBitmapInf
     }
 }
 
+jobject outerObject(JNIEnv *env, jobject thiz) {
+    jclass cls = env->GetObjectClass(thiz);
+    jfieldID outerField = env->GetFieldID(cls, "this$0", "Lcom/github/axet/pdfium/Pdfium;");
+    return env->GetObjectField(thiz, outerField);
+}
+
+jlong outerHandle(JNIEnv *env, jobject thiz) {
+    jobject outer = outerObject(env, thiz);
+    jclass cls = env->FindClass("com/github/axet/pdfium/Pdfium");
+    jfieldID fid = env->GetFieldID(cls, "handle", "J");
+    return env->GetLongField(outer, fid);
+}
+
 extern "C" { //For JNI support
 
 JNI_FUNC(void, Pdfium, FPDF_1InitLibrary)(JNIEnv *env, jclass cls) {
