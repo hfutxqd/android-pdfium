@@ -19,12 +19,11 @@ using namespace android;
 #include <string>
 #include <vector>
 
-static Mutex sLibraryLock;
+static Mutex sLibraryLock; // pdfium is not threadsafe, use synchronized (https://bugs.chromium.org/p/pdfium/issues/detail?id=126)
 
 static int sLibraryReferenceCount = 0;
 
 static void initLibraryIfNeed() {
-    Mutex::Autolock lock(sLibraryLock);
     if (sLibraryReferenceCount == 0) {
         LOGD("Init FPDF library");
         FPDF_InitLibrary();
@@ -33,7 +32,6 @@ static void initLibraryIfNeed() {
 }
 
 static void destroyLibraryIfNeed() {
-    Mutex::Autolock lock(sLibraryLock);
     if (sLibraryReferenceCount > 0) {
         LOGD("Destroy FPDF library");
         FPDF_DestroyLibrary();
@@ -189,10 +187,12 @@ jlong outerHandle(JNIEnv *env, jobject thiz) {
 extern "C" { //For JNI support
 
 JNI_FUNC(void, Pdfium, FPDF_1InitLibrary)(JNIEnv *env, jclass cls) {
+    Mutex::Autolock lock(sLibraryLock);
     initLibraryIfNeed();
 }
 
 JNI_FUNC(void, Pdfium, FPDF_1DestroyLibrary)(JNIEnv *env, jclass cls) {
+    Mutex::Autolock lock(sLibraryLock);
     destroyLibraryIfNeed();
 }
 
@@ -208,6 +208,8 @@ static int getBlock(void *param, unsigned long position, unsigned char *outBuffe
 }
 
 JNI_FUNC(void, Pdfium, open)(JNI_ARGS, jobject pfd, jstring password) {
+    Mutex::Autolock lock(sLibraryLock);
+
     initLibraryIfNeed();
 
     int fd = getFD(env, pfd);
@@ -257,6 +259,7 @@ JNI_FUNC(void, Pdfium, open)(JNI_ARGS, jobject pfd, jstring password) {
 }
 
 JNI_FUNC(void, Pdfium, close)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
@@ -267,14 +270,15 @@ JNI_FUNC(void, Pdfium, close)(JNI_ARGS) {
 }
 
 JNI_FUNC(jint, Pdfium, getPagesCount)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
     return (jint) FPDF_GetPageCount(doc);
 }
 
-
 JNI_FUNC(jstring, Pdfium, getMeta)(JNI_ARGS, jstring str) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
@@ -315,6 +319,7 @@ void loadTOC(JNIEnv *env, std::vector<BOOKMARK> &list, FPDF_DOCUMENT doc, FPDF_B
 }
 
 JNI_FUNC(jobjectArray, Pdfium, getTOC)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
@@ -352,6 +357,7 @@ JNI_FUNC(jobjectArray, Pdfium, getTOC)(JNI_ARGS) {
 }
 
 JNI_FUNC(jobject, Pdfium, openPage)(JNI_ARGS, jint page) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
@@ -371,6 +377,7 @@ JNI_FUNC(jobject, Pdfium, openPage)(JNI_ARGS, jint page) {
 }
 
 JNI_FUNC(jobject, Pdfium, getPageSize)(JNI_ARGS, jint pageIndex) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
@@ -392,6 +399,7 @@ JNI_FUNC(void, Pdfium_00024Page, render)(JNI_ARGS, jobject bitmap,
                                          jint startX, jint startY,
                                          jint drawSizeHor, jint drawSizeVer,
                                          jboolean renderAnnot) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
@@ -475,6 +483,7 @@ JNI_FUNC(void, Pdfium_00024Page, render)(JNI_ARGS, jobject bitmap,
 }
 
 JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
@@ -535,6 +544,7 @@ JNI_FUNC(jobject, Pdfium_00024Page, toDevice)(JNI_ARGS, jint startX,
                                               jint sizeY, jint rotate,
                                               jdouble pageX,
                                               jdouble pageY) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
@@ -553,6 +563,7 @@ JNI_FUNC(jobject, Pdfium_00024Page, toPage)(JNI_ARGS, jint startX,
                                             jint sizeY, jint rotate,
                                             jint deviceX,
                                             jint deviceY) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
@@ -567,6 +578,7 @@ JNI_FUNC(jobject, Pdfium_00024Page, toPage)(JNI_ARGS, jint startX,
 }
 
 JNI_FUNC(jobject, Pdfium_00024Page, open)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
@@ -581,6 +593,7 @@ JNI_FUNC(jobject, Pdfium_00024Page, open)(JNI_ARGS) {
 }
 
 JNI_FUNC(void, Pdfium_00024Page, close)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
@@ -590,6 +603,7 @@ JNI_FUNC(void, Pdfium_00024Page, close)(JNI_ARGS) {
 }
 
 JNI_FUNC(jlong, Pdfium_00024Text, getCount)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_TEXTPAGE text = (FPDF_TEXTPAGE) env->GetLongField(thiz, fid);
@@ -597,6 +611,7 @@ JNI_FUNC(jlong, Pdfium_00024Text, getCount)(JNI_ARGS) {
 }
 
 JNI_FUNC(jint, Pdfium_00024Text, getIndex)(JNI_ARGS, jint x, jint y) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_TEXTPAGE text = (FPDF_TEXTPAGE) env->GetLongField(thiz, fid);
@@ -604,6 +619,7 @@ JNI_FUNC(jint, Pdfium_00024Text, getIndex)(JNI_ARGS, jint x, jint y) {
 }
 
 JNI_FUNC(jstring, Pdfium_00024Text, getText)(JNI_ARGS, jint start, jint count) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_TEXTPAGE text = (FPDF_TEXTPAGE) env->GetLongField(thiz, fid);
@@ -619,6 +635,7 @@ JNI_FUNC(jstring, Pdfium_00024Text, getText)(JNI_ARGS, jint start, jint count) {
 }
 
 JNI_FUNC(jobjectArray, Pdfium_00024Text, getBounds)(JNI_ARGS, jint start, jint count) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_TEXTPAGE text = (FPDF_TEXTPAGE) env->GetLongField(thiz, fid);
@@ -637,6 +654,7 @@ JNI_FUNC(jobjectArray, Pdfium_00024Text, getBounds)(JNI_ARGS, jint start, jint c
 }
 
 JNI_FUNC(jobject, Pdfium_00024Text, search)(JNI_ARGS, jstring str, jint flags, jint index) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_TEXTPAGE tp = (FPDF_TEXTPAGE) env->GetLongField(thiz, fid);
@@ -654,6 +672,7 @@ JNI_FUNC(jobject, Pdfium_00024Text, search)(JNI_ARGS, jstring str, jint flags, j
 }
 
 JNI_FUNC(void, Pdfium_00024Text, close)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_TEXTPAGE text = (FPDF_TEXTPAGE) env->GetLongField(thiz, fid);
@@ -663,6 +682,7 @@ JNI_FUNC(void, Pdfium_00024Text, close)(JNI_ARGS) {
 }
 
 JNI_FUNC(jboolean, Pdfium_00024Search, next)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_SCHHANDLE search = (FPDF_SCHHANDLE) env->GetLongField(thiz, fid);
@@ -670,6 +690,7 @@ JNI_FUNC(jboolean, Pdfium_00024Search, next)(JNI_ARGS) {
 }
 
 JNI_FUNC(jboolean, Pdfium_00024Search, prev)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_SCHHANDLE search = (FPDF_SCHHANDLE) env->GetLongField(thiz, fid);
@@ -677,6 +698,7 @@ JNI_FUNC(jboolean, Pdfium_00024Search, prev)(JNI_ARGS) {
 }
 
 JNI_FUNC(jobject, Pdfium_00024Search, result)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_SCHHANDLE search = (FPDF_SCHHANDLE) env->GetLongField(thiz, fid);
@@ -688,6 +710,7 @@ JNI_FUNC(jobject, Pdfium_00024Search, result)(JNI_ARGS) {
 }
 
 JNI_FUNC(void, Pdfium_00024Search, close)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_SCHHANDLE search = (FPDF_SCHHANDLE) env->GetLongField(thiz, fid);
