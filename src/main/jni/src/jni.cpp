@@ -187,6 +187,16 @@ void rgbBitmapTo565(void *source, int sourceStride, void *dest, AndroidBitmapInf
 
 extern "C" { //For JNI support
 
+JNI_FUNC(void, Pdfium, FPDF_1InitLibrary)(JNI_ARGS, jobject pfd, jstring password) {
+    if (sLibraryReferenceCount == 0)
+        initLibraryIfNeed();
+}
+
+JNI_FUNC(void, Pdfium, FPDF_1DestroyLibrary)(JNI_ARGS, jobject pfd, jstring password) {
+    if (sLibraryReferenceCount > 0)
+        destroyLibraryIfNeed();
+}
+
 static int getBlock(void *param, unsigned long position, unsigned char *outBuffer,
                     unsigned long size) {
     const int fd = reinterpret_cast<intptr_t>(param);
@@ -199,7 +209,8 @@ static int getBlock(void *param, unsigned long position, unsigned char *outBuffe
 }
 
 JNI_FUNC(void, Pdfium, open)(JNI_ARGS, jobject pfd, jstring password) {
-    initLibraryIfNeed();
+    if (sLibraryReferenceCount == 0)
+        initLibraryIfNeed();
 
     int fd = getFD(env, pfd);
 
@@ -251,10 +262,10 @@ JNI_FUNC(void, Pdfium, close)(JNI_ARGS) {
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
     FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
-    if (doc != NULL)
+    if (doc != NULL) {
         FPDF_CloseDocument(doc);
+    }
     env->SetLongField(thiz, fid, (jlong) 0);
-    destroyLibraryIfNeed();
 }
 
 JNI_FUNC(jint, Pdfium, getPagesCount)(JNI_ARGS) {
