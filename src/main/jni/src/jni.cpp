@@ -6,6 +6,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 }
 
 #include <android/bitmap.h>
@@ -522,8 +523,9 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
         if (FPDFLink_GetAnnotRect(link, &fsRectF)) {
             jclass clazz = env->FindClass("android/graphics/Rect");
             jmethodID constructorID = env->GetMethodID(clazz, "<init>", "(IIII)V");
-            rect = env->NewObject(clazz, constructorID, (int) fsRectF.left, (int) fsRectF.top,
-                                  (int) fsRectF.right, (int) fsRectF.bottom);
+            rect = env->NewObject(clazz, constructorID, (int) floor(fsRectF.left),
+                                  (int) ceil(fsRectF.top), (int) ceil(fsRectF.right),
+                                  (int) floor(fsRectF.bottom));
         }
 
         jmethodID constructorID = env->GetMethodID(linkClass, "<init>",
@@ -646,7 +648,8 @@ JNI_FUNC(jobjectArray, Pdfium_00024Text, getBounds)(JNI_ARGS, jint start, jint c
     for (int i = 0; i < c; i++) {
         double l, t, r, b;
         FPDFText_GetRect(text, i, &l, &t, &r, &b);
-        jobject v = env->NewObject(rectCls, constructorID, (int) l, (int) t, (int) r, (int) b);
+        jobject v = env->NewObject(rectCls, constructorID, (int) floor(l), (int) ceil(t),
+                                   (int) floor(r), (int) ceil(b));
         env->SetObjectArrayElement(ar, i, v);
         env->DeleteLocalRef(v);
     }
