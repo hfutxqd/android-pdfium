@@ -126,7 +126,7 @@ public class Pdfium {
     public static class Text {
         private long handle;
 
-        public native long getCount();
+        public native int getCount();
 
         public native int getIndex(int x, int y);
 
