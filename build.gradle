@@ -17,10 +17,6 @@ repositories {
     mavenLocal()
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -130,7 +126,4 @@ uploadArchives {
             }
         }
     }
-}
-
-dependencies {
 }

@@ -346,7 +346,7 @@ JNI_FUNC(jobjectArray, Pdfium, getTOC)(JNI_ARGS) {
         int page = -1;
         FPDF_DEST dest = FPDFBookmark_GetDest(doc, bm.bm);
         if (dest != 0) {
-            page = (int) FPDFDest_GetPageIndex(doc, dest);
+            page = (int) FPDFDest_GetDestPageIndex(doc, dest);
         }
 
         jobject o = env->NewObject(bookmarkCls, constructorID, s, page, bm.level);
@@ -403,7 +403,7 @@ JNI_FUNC(void, Pdfium_00024Page, render)(JNI_ARGS, jobject bitmap,
     Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
-    FPDF_PAGE page = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
+    FPDF_PAGE page = (FPDF_PAGE) env->GetLongField(thiz, fid);
 
     AndroidBitmapInfo info;
     int ret;
@@ -504,7 +504,7 @@ JNI_FUNC(jobjectArray, Pdfium_00024Page, getLinks)(JNI_ARGS) {
         int index = -1;
         FPDF_DEST dest = FPDFLink_GetDest(doc, link);
         if (dest != 0)
-            index = (int) FPDFDest_GetPageIndex(doc, dest);
+            index = (int) FPDFDest_GetDestPageIndex(doc, dest);
 
         jstring s = 0;
         FPDF_ACTION action = FPDFLink_GetAction(link);
