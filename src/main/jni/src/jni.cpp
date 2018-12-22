@@ -604,7 +604,7 @@ JNI_FUNC(void, Pdfium_00024Page, close)(JNI_ARGS) {
     env->SetLongField(thiz, fid, 0);
 }
 
-JNI_FUNC(jlong, Pdfium_00024Text, getCount)(JNI_ARGS) {
+JNI_FUNC(jint, Pdfium_00024Text, getCount)(JNI_ARGS) {
     Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
