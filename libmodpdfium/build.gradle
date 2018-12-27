@@ -1,10 +1,9 @@
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
         google()
-        mavenLocal()
     }
-
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
@@ -12,9 +11,9 @@ buildscript {
 }
 
 repositories {
-    jcenter()
-    google()
     mavenLocal()
+    google()
+    jcenter()
 }
 
 apply plugin: 'com.android.library'
@@ -32,46 +31,37 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 16
-        versionName "2.0.10"
-        consumerProguardFiles 'consumer-proguard-rules.pro'
-        ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        versionCode 1
+        versionName "25bc9a9"
+    }
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
         }
     }
     buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
         }
     }
-
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jni/lib']
         }
     }
-}
-
-// http://central.sonatype.org/pages/gradle.html
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
-    options.addStringOption('Xdoclint:none', '-quiet')
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+        }
+    }
 }
 
 signing {
@@ -79,7 +69,7 @@ signing {
 }
 
 group = "com.github.axet"
-archivesBaseName = "pdfium"
+archivesBaseName = "libmodpdfium"
 version = android.defaultConfig.versionName
 
 uploadArchives {
@@ -96,9 +86,9 @@ uploadArchives {
             }
 
             pom.project {
-                name 'Android PdfiumAndroid Library'
+                name 'android libmodpdfium'
                 packaging 'jar'
-                description 'PdfiumAndroid base classes.'
+                description 'android libmodpdfium.'
                 url 'https://gitlab.com/axet/android-pdfium'
 
                 scm {
@@ -109,8 +99,8 @@ uploadArchives {
 
                 licenses {
                     license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name 'Pdfium LICENCE'
+                        url 'https://pdfium.googlesource.com/pdfium/+/master/LICENSE'
                     }
                 }
 
@@ -120,18 +110,8 @@ uploadArchives {
                         name 'Alexey Kuznetsov'
                         email 'axet@me.com'
                     }
-                    developer {
-                        id 'barteksc'
-                        name 'Bartosz Schiller'
-                        email 'barteksch@boo.pl'
-                    }
                 }
             }
         }
     }
-}
-
-dependencies {
-    api 'com.github.axet:libmodpdfium:25bc9a9' // debugCompile project(path:':android-vorbis:libvorbis', configuration:'libraryDebug')
-    testImplementation 'junit:junit:4.12'
 }
