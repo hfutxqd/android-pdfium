@@ -396,10 +396,21 @@ JNI_FUNC(jobject, Pdfium, getPageSize)(JNI_ARGS, jint pageIndex) {
     return env->NewObject(clazz, constructorID, (int) width, (int) height);
 }
 
+JNI_FUNC(jint, Pdfium, getVersion)(JNI_ARGS) {
+    Mutex::Autolock lock(sLibraryLock);
+    jclass cls = env->GetObjectClass(thiz);
+    jfieldID fid = env->GetFieldID(cls, "handle", "J");
+    FPDF_DOCUMENT doc = (FPDF_DOCUMENT) env->GetLongField(thiz, fid);
+    int version = 0;
+    if (!FPDF_GetFileVersion(doc, &version))
+        return 0;
+    return version;
+}
+
 JNI_FUNC(void, Pdfium_00024Page, render)(JNI_ARGS, jobject bitmap,
                                          jint startX, jint startY,
                                          jint drawSizeHor, jint drawSizeVer,
-                                         jboolean renderAnnot) {
+                                         jint flags) {
     Mutex::Autolock lock(sLibraryLock);
     jclass cls = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(cls, "handle", "J");
@@ -440,34 +451,21 @@ JNI_FUNC(void, Pdfium_00024Page, render)(JNI_ARGS, jobject bitmap,
         format = FPDFBitmap_BGRA;
     }
 
-    FPDF_BITMAP pdfBitmap = FPDFBitmap_CreateEx(canvasHorSize, canvasVerSize,
-                                                format, tmp, sourceStride);
-
-    /*LOGD("Start X: %d", startX);
-    LOGD("Start Y: %d", startY);
-    LOGD("Canvas Hor: %d", canvasHorSize);
-    LOGD("Canvas Ver: %d", canvasVerSize);
-    LOGD("Draw Hor: %d", drawSizeHor);
-    LOGD("Draw Ver: %d", drawSizeVer);*/
+    FPDF_BITMAP pdfBitmap = FPDFBitmap_CreateEx(canvasHorSize, canvasVerSize, format, tmp,
+                                                sourceStride);
 
     if (drawSizeHor < canvasHorSize || drawSizeVer < canvasVerSize) {
-        FPDFBitmap_FillRect(pdfBitmap, 0, 0, canvasHorSize, canvasVerSize,
-                            0x848484FF); //Gray
+        FPDFBitmap_FillRect(pdfBitmap, 0, 0, canvasHorSize, canvasVerSize, 0x848484FF); // Gray
     }
 
     int baseHorSize = (canvasHorSize < drawSizeHor) ? canvasHorSize : (int) drawSizeHor;
     int baseVerSize = (canvasVerSize < drawSizeVer) ? canvasVerSize : (int) drawSizeVer;
     int baseX = (startX < 0) ? 0 : (int) startX;
     int baseY = (startY < 0) ? 0 : (int) startY;
-    int flags = FPDF_REVERSE_BYTE_ORDER;
-
-    if (renderAnnot) {
-        flags |= FPDF_ANNOT;
-    }
+    flags |= FPDF_REVERSE_BYTE_ORDER;
 
     if (info.format == ANDROID_BITMAP_FORMAT_RGB_565) {
-        FPDFBitmap_FillRect(pdfBitmap, baseX, baseY, baseHorSize, baseVerSize,
-                            0xFFFFFFFF); //White
+        FPDFBitmap_FillRect(pdfBitmap, baseX, baseY, baseHorSize, baseVerSize, 0xFFFFFFFF); // White
     }
 
     FPDF_RenderPageBitmap(pdfBitmap, page,

@@ -22,6 +22,19 @@ public class Pdfium {
     public static final String META_CREATIONDATE = "CreationDate";
     public static final String META_MODDATE = "ModDate";
 
+    public static final int FPDF_ANNOT = 0x01; // Set if annotations are to be rendered.
+    public static final int FPDF_LCD_TEXT = 0x02; // Set if using text rendering optimized for LCD display.
+    public static final int FPDF_NO_NATIVETEXT = 0x04; // Don't use the native text output available on some platforms
+    public static final int FPDF_GRAYSCALE = 0x08; // Grayscale output.
+    public static final int FPDF_DEBUG_INFO = 0x80; // Set if you want to get some debug info.
+    public static final int FPDF_NO_CATCH = 0x100; // Set if you don't want to catch exceptions.
+    public static final int FPDF_RENDER_LIMITEDIMAGECACHE = 0x200; // Limit image cache size.
+    public static final int FPDF_RENDER_FORCEHALFTONE = 0x400; // Always use halftone for image stretching.
+    public static final int FPDF_PRINTING = 0x800; // Render for printing.
+    public static final int FPDF_RENDER_NO_SMOOTHTEXT = 0x1000; // Set to disable anti-aliasing on text.
+    public static final int FPDF_RENDER_NO_SMOOTHIMAGE = 0x2000; // Set to disable anti-aliasing on images.
+    public static final int FPDF_RENDER_NO_SMOOTHPATH = 0x4000; // Set to disable anti-aliasing on paths.
+
     private long handle;
 
     static {
@@ -51,16 +64,13 @@ public class Pdfium {
          * </ul>
          */
         public void render(Bitmap bitmap, int startX, int startY, int drawSizeX, int drawSizeY) {
-            render(bitmap, startX, startY, drawSizeX, drawSizeY, false);
+            render(bitmap, startX, startY, drawSizeX, drawSizeY, 0);
         }
 
         /**
-         * Render page fragment on {@link Bitmap}. This method allows to render annotations.<br>
-         * Page must be opened before rendering.
-         * <p>
-         * For more info see {@link Pdfium#render(Bitmap, int, int, int, int, int)}
+         * Render page fragment on {@link Bitmap}. This method allows to set render flags.
          */
-        public native void render(Bitmap bitmap, int startX, int startY, int drawSizeX, int drawSizeY, boolean renderAnnot);
+        public native void render(Bitmap bitmap, int startX, int startY, int drawSizeX, int drawSizeY, int flags);
 
         /**
          * Get all links from given page
@@ -255,4 +265,9 @@ public class Pdfium {
      * Get table of contents (bookmarks) for given document
      */
     public native Bookmark[] getTOC();
+
+    /**
+     * The PDF file version. File version: 14 for 1.4, 15 for 1.5, ...
+     */
+    public native int getVersion();
 }
