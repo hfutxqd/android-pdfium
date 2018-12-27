@@ -1,4 +1,0 @@
--keep class com.github.axet.pdfium.Pdfium {*;}
--keep class com.github.axet.pdfium.Pdfium$Page {*;}
--keep class com.github.axet.pdfium.Pdfium$Text {*;}
--keep class com.github.axet.pdfium.Pdfium$Search {*;}
