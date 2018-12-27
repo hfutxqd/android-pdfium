@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
@@ -24,13 +24,14 @@ apply plugin: 'com.github.dcendents.android-maven' // 'gradle install' task
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "27.0.3"
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 16
         versionName "2.0.9-25bc9a9"
+        consumerProguardFiles 'consumer-proguard-rules.pro'
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
