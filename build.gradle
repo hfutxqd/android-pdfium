@@ -33,7 +33,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 17
-        versionName "2.0.10"
+        versionName "2.0.11"
         consumerProguardFiles 'consumer-proguard-rules.pro'
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
