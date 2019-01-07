@@ -32,19 +32,23 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 17
-        versionName "2.0.10"
+        versionCode 18
+        versionName "2.0.11"
         consumerProguardFiles 'consumer-proguard-rules.pro'
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
     }
     buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
         }
     }
-
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
@@ -82,17 +86,21 @@ group = "com.github.axet"
 archivesBaseName = "pdfium"
 version = android.defaultConfig.versionName
 
+def prop(String name) {
+    project.hasProperty(name) ? project.getProperty(name) : null
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: prop('ossrhUsername'), password: prop('ossrhPassword'))
             }
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: prop('ossrhUsername'), password: prop('ossrhPassword'))
             }
 
             pom.project {

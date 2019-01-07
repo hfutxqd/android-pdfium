@@ -91,9 +91,10 @@ jstring NewStringUTF16LE(JNIEnv *env, const jbyte *buf, int len) {
     const jstring charsetName = env->NewStringUTF("UTF-16LE");
     jbyteArray ba = env->NewByteArray(len);
     env->SetByteArrayRegion(ba, 0, len, buf);
-    const jstring str = (jstring) env->NewObject(stringCls, constructorID, ba,
-                                                 charsetName);
+    const jstring str = (jstring) env->NewObject(stringCls, constructorID, ba, charsetName);
     env->DeleteLocalRef(charsetName);
+    env->DeleteLocalRef(ba);
+    env->DeleteLocalRef(stringCls);
     return str;
 }
 
@@ -346,7 +347,7 @@ JNI_FUNC(jobjectArray, Pdfium, getTOC)(JNI_ARGS) {
         int page = -1;
         FPDF_DEST dest = FPDFBookmark_GetDest(doc, bm.bm);
         if (dest != 0) {
-            page = (int) FPDFDest_GetDestPageIndex(doc, dest);
+            page = FPDFDest_GetDestPageIndex(doc, dest);
         }
 
         jobject o = env->NewObject(bookmarkCls, constructorID, s, page, bm.level);
