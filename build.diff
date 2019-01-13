@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index c771b81..ffbec0b 100644
+index 3a2cf0a8f..fd1a5666d 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -17,13 +17,14 @@ group("freetype_common") {
+@@ -16,13 +16,14 @@ group("freetype_common") {
  }
  
  config("pdfium_common_config") {
@@ -17,9 +17,9 @@ index c771b81..ffbec0b 100644
 +    "FPDFSDK_EXPORTS"
    ]
  
-   if (pdf_enable_v8) {
-@@ -101,6 +102,11 @@ config("xfa_warnings") {
-   }
+   if (pdf_enable_click_logging) {
+@@ -126,6 +127,11 @@ jumbo_source_set("pdfium_public_headers") {
+   public_configs = [ ":pdfium_public_config" ]
  }
  
 +shared_library("modpdfium") {
@@ -29,4 +29,20 @@ index c771b81..ffbec0b 100644
 +
  jumbo_static_library("pdfium") {
    sources = [
-     "fpdfsdk/cba_annotiterator.cpp",
+     "fpdfsdk/fpdf_annot.cpp",
+diff --git a/build_overrides/build.gni b/build_overrides/build.gni
+index bb1525380..b751e2466 100644
+--- a/build_overrides/build.gni
++++ b/build_overrides/build.gni
+@@ -22,11 +22,6 @@ default_android_ndk_major_version = 16
+ # PDFium builds don't support building java targets.
+ enable_java_templates = false
+ 
+-# Whether to use the neon FPU instruction set or not.
+-if (current_cpu == "arm") {
+-  arm_use_neon = true
+-}
+-
+ # PDFium builds don't use Chromium's third_party/binutils.
+ linux_use_bundled_binutils_override = false
+ 

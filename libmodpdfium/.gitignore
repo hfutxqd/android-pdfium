@@ -1,4 +1,4 @@
 /build
 .externalNativeBuild
 .gradle
-src/main/jni/lib
+/src/main/jniLibs/
