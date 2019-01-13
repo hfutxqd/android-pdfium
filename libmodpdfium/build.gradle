@@ -32,7 +32,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 1
-        versionName "25bc9a9"
+        versionName "25bc9a9-1"
     }
     buildTypes {
         debug {
