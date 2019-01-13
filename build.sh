@@ -16,7 +16,7 @@ build() {
 
 build x86 x86
 build x64 x86_64
-build arm armeabi-v7a
+build arm armeabi
 build arm64 arm64-v8a
 
 # build mipsel mips
