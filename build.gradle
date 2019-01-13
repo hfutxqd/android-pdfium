@@ -32,7 +32,7 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 18
+        versionCode 19
         versionName "2.0.12"
         consumerProguardFiles 'consumer-proguard-rules.pro'
         ndk {
