@@ -33,7 +33,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 20
-        versionName "2.0.13"
+        versionName "2.0.14"
         consumerProguardFiles 'consumer-proguard-rules.pro'
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
@@ -140,6 +140,6 @@ uploadArchives {
 }
 
 dependencies {
-    api 'com.github.axet:libmodpdfium:25bc9a9-2' // debugCompile project(path:':android-vorbis:libvorbis', configuration:'libraryDebug')
+    api 'com.github.axet:libmodpdfium:25bc9a9-3' // debugCompile project(path:':android-vorbis:libvorbis', configuration:'libraryDebug')
     testImplementation 'junit:junit:4.12'
 }
