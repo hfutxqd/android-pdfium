@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
@@ -58,6 +58,10 @@ android {
 
 // http://central.sonatype.org/pages/gradle.html
 
+def prop(String name) {
+    project.hasProperty(name) ? project.getProperty(name) : null
+}
+
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
@@ -85,10 +89,6 @@ signing {
 group = "com.github.axet"
 archivesBaseName = "pdfium"
 version = android.defaultConfig.versionName
-
-def prop(String name) {
-    project.hasProperty(name) ? project.getProperty(name) : null
-}
 
 uploadArchives {
     repositories {
