@@ -121,6 +121,10 @@ publishing {
             credentials {
                 username prop('ossrhUsername')
                 password prop('ossrhPassword')
+            }
+       }
+    }
+}
 
 signing {
     sign publishing.publications.mavenJava
