@@ -1,11 +1,13 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 set -e
 
 build() {
   local ARCH="$1"
   shift
-  local OUT="android/$ARCH/libmodpdfium.so"
+  local OUT="$DIR/libmodpdfium/src/main/jniLibs/$ARCH/libmodpdfium.so"
   [ -e "$OUT" ] && return
   echo "building $OUT"
   gn gen out --args="target_os=\"android\" pdf_bundle_freetype=true pdf_is_standalone=false is_component_build=false pdf_enable_xfa=false pdf_enable_v8=false is_debug=false is_official_build=true $*"
@@ -21,3 +23,4 @@ build x86_64 target_cpu=\"x64\"
 #build mipsel mips
 #build mips64el mips64
 
+cp public/*.h "$DIR/libmodpdfium/src/main/cpp/include/"

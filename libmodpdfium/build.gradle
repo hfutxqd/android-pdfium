@@ -5,8 +5,13 @@ buildscript {
         google()
     }
     dependencies {
+<<<<<<< HEAD
         classpath 'com.android.tools.build:gradle:3.3.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+=======
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'digital.wup:android-maven-publish:3.6.2'
+>>>>>>> master
     }
 }
 
@@ -19,7 +24,7 @@ repositories {
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply plugin: 'com.github.dcendents.android-maven' // 'gradle install' task
+apply plugin: 'digital.wup.android-maven-publish' // 'gradle publishToMavenLocal' and 'publish' tasks
 
 android {
     compileSdkVersion 25
@@ -32,7 +37,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 1
-        versionName "25bc9a9-3"
+        versionName "dc397e0"
     }
     buildTypes {
         debug {
@@ -51,54 +56,76 @@ android {
     }
 }
 
-signing {
-    sign configurations.archives
+// https://docs.gradle.org/current/userguide/publishing_maven.html
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(project.android.getBootClasspath().join(File.pathSeparator))
 }
 
-group = "com.github.axet"
-archivesBaseName = "libmodpdfium"
-version = android.defaultConfig.versionName
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: prop('ossrhUsername'), password: prop('ossrhPassword'))
-            }
+def prop(String name) {
+    project.hasProperty(name) ? project.getProperty(name) : null
+}
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: prop('ossrhUsername'), password: prop('ossrhPassword'))
-            }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'com.github.axet'
+            artifactId 'libmodpdfium'
+            version android.defaultConfig.versionName
 
-            pom.project {
-                name 'android libmodpdfium'
-                packaging 'jar'
-                description 'android libmodpdfium.'
-                url 'https://gitlab.com/axet/android-pdfium'
+            from components.android
+            artifact sourcesJar
+            artifact javadocJar
 
-                scm {
-                    connection 'scm:git:https://gitlab.com/axet/android-pdfium'
-                    developerConnection 'scm:git:https://gitlab.com/axet/android-pdfium'
-                    url 'https://gitlab.com/axet/android-pdfium'
-                }
-
+            pom {
+                name = 'android libmodpdfium'
+                description = 'android libmodpdfium.'
+                url = 'https://gitlab.com/axet/android-pdfium'
                 licenses {
                     license {
-                        name 'Pdfium LICENCE'
-                        url 'https://pdfium.googlesource.com/pdfium/+/master/LICENSE'
+                        name = 'Pdfium LICENCE'
+                        url = 'https://pdfium.googlesource.com/pdfium/+/master/LICENSE'
                     }
                 }
-
                 developers {
                     developer {
-                        id 'axet'
-                        name 'Alexey Kuznetsov'
-                        email 'axet@me.com'
+                        id = 'axet'
+                        name = 'Alexey Kuznetsov'
+                        email = 'axet@me.com'
                     }
+                }
+                scm {
+                    connection = 'scm:git:' + pom.url.get()
+                    developerConnection = 'scm:git:' + pom.url.get()
+                    url = pom.url
                 }
             }
         }
     }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username prop('ossrhUsername')
+                password prop('ossrhPassword')
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }

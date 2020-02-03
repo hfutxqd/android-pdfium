@@ -2,7 +2,7 @@ diff --git a/BUILD.gn b/BUILD.gn
 index 3a2cf0a8f..41d1d71bd 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -16,13 +16,14 @@ group("freetype_common") {
+@@ -15,12 +15,13 @@ group("freetype_common") {
  }
  
  config("pdfium_common_config") {
@@ -11,7 +11,6 @@ index 3a2cf0a8f..41d1d71bd 100644
    ldflags = []
    include_dirs = [ "." ]
    defines = [
-     "OPJ_STATIC",
      "PNG_PREFIX",
      "PNG_USE_READ_MACROS",
 +    "FPDFSDK_EXPORTS"
@@ -28,9 +27,9 @@ index 3a2cf0a8f..41d1d71bd 100644
 +  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
 +}
 +
- jumbo_static_library("pdfium") {
-   sources = [
-     "fpdfsdk/fpdf_annot.cpp",
+ component("pdfium") {
+   libs = []
+   configs += [ ":pdfium_core_config" ]
 diff --git a/build_overrides/build.gni b/build_overrides/build.gni
 index bb1525380..b751e2466 100644
 --- a/build_overrides/build.gni
