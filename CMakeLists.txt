@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.4.1)
 add_library( pdfiumjni SHARED
              src/main/cpp/jni.cpp )
 
-include_directories(src/main/cpp)
+include_directories( src/main/cpp )
 
-add_definitions(-DHAVE_PTHREADS)
+add_definitions( -DHAVE_PTHREADS )
 
 # one day we will be possible to replace those lines with find_library(modpdfium-lib modpdfium)
 add_library(modpdfium SHARED IMPORTED)
@@ -19,5 +19,4 @@ find_library( android-lib android )
 
 find_library( jnigraphics-lib jnigraphics )
 
-target_link_libraries( pdfiumjni ${log-lib} ${android-lib} ${jnigraphics-lib} modpdfium)
-
+target_link_libraries( pdfiumjni ${log-lib} ${android-lib} ${jnigraphics-lib} modpdfium )

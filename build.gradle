@@ -1,8 +1,8 @@
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
         google()
-        mavenLocal()
     }
 
     dependencies {
@@ -12,9 +12,9 @@ buildscript {
 }
 
 repositories {
+    mavenLocal()
     jcenter()
     google()
-    mavenLocal()
 }
 
 apply plugin: 'com.android.library'
@@ -121,10 +121,6 @@ publishing {
             credentials {
                 username prop('ossrhUsername')
                 password prop('ossrhPassword')
-            }
-        }
-    }
-}
 
 signing {
     sign publishing.publications.mavenJava
