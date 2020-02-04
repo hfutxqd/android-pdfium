@@ -15,13 +15,13 @@ build() {
   mkdir -p $(dirname "$OUT") && cp out/libmodpdfium.so "$OUT"
 }
 
-#build armeabi target_cpu=\"arm\" arm_arch=\"armv5\" arm_version=5 arm_use_thumb=false arm_use_neon=false arm_fpu=\"vfpv2\" arm_float_abi=\"soft\" treat_warnings_as_errors=false
-build armeabi target_cpu=\"arm\" arm_arch=\"armv6k\" arm_use_neon=false arm_use_thumb=false arm_fpu=\"vfp\" arm_float_abi=\"softfp\"
+build armeabi target_cpu=\"arm\" arm_arch=\"armv5\" arm_version=5 arm_use_thumb=false arm_use_neon=false arm_fpu=\"vfpv2\" arm_float_abi=\"soft\" treat_warnings_as_errors=false
+#build armeabi target_cpu=\"arm\" arm_arch=\"armv6k\" arm_use_neon=false arm_use_thumb=false arm_fpu=\"vfp\" arm_float_abi=\"softfp\"
 build armeabi-v7a target_cpu=\"arm\" arm_version=7
 build arm64-v8a target_cpu=\"arm64\"
 build x86 target_cpu=\"x86\"
 build x86_64 target_cpu=\"x64\"
-#build mipsel mips
-#build mips64el mips64
+#build mipsel target_cpu=\"mipsel\"
+#build mips64el target_cpu=\"mips64el\"
 
 cp public/*.h "$DIR/libmodpdfium/src/main/cpp/include/"

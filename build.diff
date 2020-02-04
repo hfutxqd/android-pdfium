@@ -1,5 +1,5 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 62f09e580..7d9aaf34a 100644
+index 62f09e580..794161883 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
 @@ -15,12 +15,13 @@ group("freetype_common") {
@@ -17,14 +17,16 @@ index 62f09e580..7d9aaf34a 100644
    ]
  
    if (!use_system_libopenjpeg2) {
-@@ -138,6 +139,12 @@ group("pdfium_public_headers") {
+@@ -138,6 +139,14 @@ group("pdfium_public_headers") {
    ]
  }
  
 +shared_library("modpdfium") {
 +  deps = [":pdfium"]
 +  ldflags = [ "-latomic" ]
-+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
++  if (target_os == "android") {
++    configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
++  }
 +}
 +
  component("pdfium") {
